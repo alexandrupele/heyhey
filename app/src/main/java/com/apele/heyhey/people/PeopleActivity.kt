@@ -52,9 +52,7 @@ class PeopleActivity : AppCompatActivity() {
 
         showProgress(getString(R.string.loading_message_facebook_friends))
         getFriendsFromFacebook { friends ->
-            if (BuildConfig.DEBUG) {
-                friends.add(HeyHeyApp.currentUser!!)
-            }
+            friends.add(HeyHeyApp.currentUser!!)
 
             adapter.users = friends
             adapter.notifyDataSetChanged()
