@@ -23,13 +23,13 @@ import org.jetbrains.anko.startActivityForResult
 import org.json.JSONArray
 import org.json.JSONObject
 import com.afollestad.materialdialogs.MaterialDialog
-
+import com.apele.heyhey.utils.ViewsUtils
 
 /**
  * Created by alexandrupele on 28/05/2017.
  */
 
-class PeopleActivity : AppCompatActivity(), OnUserClicked {
+class PeopleActivity : AppCompatActivity() {
 
     val PICK_MESSAGE_REQUEST = 1994
     val USERS_PER_ROW = 2
@@ -43,12 +43,14 @@ class PeopleActivity : AppCompatActivity(), OnUserClicked {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_people)
 
-        adapter = PeopleAdapter(mutableListOf(), this)
+        adapter = PeopleAdapter(mutableListOf()) {
+            onUserClicked(it)
+        }
 
         recyclerView.layoutManager = GridLayoutManager(this, USERS_PER_ROW)
         recyclerView.adapter = adapter
 
-        showProgress()
+        showProgress(getString(R.string.loading_message_facebook_friends))
         getFriendsFromFacebook { friends ->
             if (BuildConfig.DEBUG) {
                 friends.add(HeyHeyApp.currentUser!!)
@@ -58,11 +60,6 @@ class PeopleActivity : AppCompatActivity(), OnUserClicked {
             adapter.notifyDataSetChanged()
             hideProgress()
         }
-    }
-
-    override fun onUserClicked(user: User) {
-        selectedUser = user
-        startActivityForResult<MessagePickerActivity>(PICK_MESSAGE_REQUEST);
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -91,6 +88,11 @@ class PeopleActivity : AppCompatActivity(), OnUserClicked {
                 }
             }
         }
+    }
+
+    private fun onUserClicked(user: User) {
+        selectedUser = user
+        startActivityForResult<MessagePickerActivity>(PICK_MESSAGE_REQUEST);
     }
 
     private fun getDeviceIdForSelectedUser(onDeviceIdLoaded: (deviceId: String?) -> Unit) {
@@ -140,18 +142,21 @@ class PeopleActivity : AppCompatActivity(), OnUserClicked {
     }
 
     private fun send(message: String) {
-        showProgress()
+        showProgress(getString(R.string.loading_message_fcm_push))
+
+        val friendName = selectedUser.name
         HeyHeyApp.notificationManager.send(message = message,
                 title = HeyHeyApp.currentUser!!.name,
                 targetDeviceId = selectedUser.fcmDeviceId) {
                 hideProgress()
+                ViewsUtils.createOKSnackBar(coordinatorLayout, "Sent message to $friendName").show()
         }
     }
 
-    private fun showProgress() {
+    private fun showProgress(message: String) {
         progressDialog = MaterialDialog.Builder(this)
-                .title("Sending")
-                .content("Please wait")
+                .title(getString(R.string.loading_title_please_wait))
+                .content(message)
                 .progress(true, 0)
                 .show()
     }

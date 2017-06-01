@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Toolbar
         android:id="@+id/toolbar"
@@ -30,25 +31,25 @@
         fab:menu_labels_ellipsize="end"
         fab:menu_labels_singleLine="true"
         fab:menu_backgroundColor="#ccffffff"
-        fab:menu_icon="@drawable/ic_menu"
-        fab:menu_fab_label="Actions">
+        fab:menu_colorNormal="@color/colorAccent"
+        fab:menu_fab_label="@string/fab_menu_label">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fabCompose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_edit"
+            app:fab_colorNormal="@color/colorAccentLight"
             fab:fab_size="mini"
-            fab:fab_label="Compose" />
+            fab:fab_label="@string/fab_item_compose" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fabAddMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorAccentLight"
             android:src="@drawable/ic_star"
             fab:fab_size="mini"
-            fab:fab_label="Add predefined message" />
-
+            fab:fab_label="@string/fab_item_predefined" />
     </com.github.clans.fab.FloatingActionMenu>
-
 </RelativeLayout>

@@ -4,4 +4,14 @@
     <string name="facebook_application_id" translatable="false">1497186710352243</string>
     <!-- Facebook Application ID, prefixed by 'fb'.  Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb1497186710352243</string>
+
+    <!-- Progress Dialogs -->
+    <string name="loading_title_please_wait">Please wait</string>
+    <string name="loading_message_fcm_push">Sending message…</string>
+    <string name="loading_message_facebook_friends">Loading friends from Facebook…</string>
+
+    <!-- Floating Action Button Menu -->
+    <string name="fab_menu_label">Actions</string>
+    <string name="fab_item_compose">Compose</string>
+    <string name="fab_item_predefined">Add predefined message</string>
 </resources>

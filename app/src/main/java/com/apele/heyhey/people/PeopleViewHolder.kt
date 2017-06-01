@@ -12,12 +12,12 @@ import kotlinx.android.synthetic.main.friend_item.view.*
  */
 class PeopleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(user: User, listener: OnUserClicked) {
+    fun bind(user: User, onUserClicked : (user: User) -> Unit) {
         with (itemView) {
             nameTextView.text = user.name
             avatarImageView.loadImage(user.pictureUrl)
             setOnClickListener { _ ->
-                listener.onUserClicked(user)
+                onUserClicked(user)
             }
         }
     }
