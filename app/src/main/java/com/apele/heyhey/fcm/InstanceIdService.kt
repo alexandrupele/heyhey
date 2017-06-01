@@ -26,10 +26,6 @@ class InstanceIdService : FirebaseInstanceIdService() {
 
             val db = FirebaseDatabase.getInstance().reference
             db.child("users").child(it.uid).setValue(user)
-
-            Log.d(javaClass.simpleName, "--- dbUpdate: " + user)
         }
-
-        Log.d(javaClass.simpleName, "--- deviceId: " + FirebaseInstanceId.getInstance().token)
     }
 }

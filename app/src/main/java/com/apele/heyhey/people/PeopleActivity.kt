@@ -105,7 +105,6 @@ class PeopleActivity : AppCompatActivity() {
                 .addValueEventListener(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError?) {
                         onDeviceIdLoaded(null)
-                        Log.d(javaClass.simpleName, "--- query: onCanceled");
                     }
 
                     override fun onDataChange(snapshot: DataSnapshot?) {
