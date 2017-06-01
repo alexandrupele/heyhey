@@ -71,6 +71,7 @@ class MessagePickerActivity : ListActivity() {
             if (it.isEmpty()) {
                 insertDefaultMessages {
                     getMessageOptionsFromDb {
+                        getMessages?.dispose()
                         messageOptions.addAll(it)
                         adapter.notifyDataSetChanged()
                     }
