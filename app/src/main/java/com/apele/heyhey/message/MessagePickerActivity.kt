@@ -118,7 +118,11 @@ class MessagePickerActivity : ListActivity() {
         val messageOptionDao = HeyHeyApp.database.messageOptionDao()
 
         Single.fromCallable {
-            messageOptionDao.addMessages(listOf("Hey".msg, "Hai la tigara".msg))
+            val defaults = resources.getStringArray(R.array.default_messages).toList().map {
+                it.msg
+            }
+
+            messageOptionDao.addMessages(defaults)
         }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { _ ->
