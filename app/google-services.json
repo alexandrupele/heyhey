@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "209568936520",
+    "firebase_url": "https://hey-hey-5e60e.firebaseio.com",
+    "project_id": "hey-hey-5e60e",
+    "storage_bucket": "hey-hey-5e60e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:209568936520:android:7d154b343b56afb2",
+        "android_client_info": {
+          "package_name": "com.apele.heyhey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "209568936520-acsh5f2vs46qdofhd47em09taomjbq1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsJ47jdGwZnvxw7wHje41Yib-CcGE8O1k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
