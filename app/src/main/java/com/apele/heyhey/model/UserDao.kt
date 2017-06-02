@@ -1,9 +1,6 @@
 package com.apele.heyhey.model
 
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
-import android.arch.persistence.room.Update
+import android.arch.persistence.room.*
 import io.reactivex.Flowable
 
 /**
@@ -17,4 +14,7 @@ interface UserDao {
 
     @Insert
     fun addUser(user : User)
+
+    @Delete
+    fun delete(user: User)
 }

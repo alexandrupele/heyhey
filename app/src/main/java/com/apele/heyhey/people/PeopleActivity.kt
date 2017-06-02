@@ -2,28 +2,39 @@ package com.apele.heyhey.people
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
+import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.apele.heyhey.BuildConfig
+import com.afollestad.materialdialogs.MaterialDialog
 import com.apele.heyhey.HeyHeyApp
 import com.apele.heyhey.R
+import com.apele.heyhey.launcher.LauncherActivity
 import com.apele.heyhey.message.EXTRA_MESSAGE
 import com.apele.heyhey.message.MessagePickerActivity
 import com.apele.heyhey.model.User
+import com.apele.heyhey.utils.ViewsUtils
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
+import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.Auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_people.*
+import org.jetbrains.anko.clearTop
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
 import org.json.JSONArray
 import org.json.JSONObject
-import com.afollestad.materialdialogs.MaterialDialog
-import com.apele.heyhey.utils.ViewsUtils
 
 /**
  * Created by alexandrupele on 28/05/2017.
@@ -34,21 +45,17 @@ class PeopleActivity : AppCompatActivity() {
     val PICK_MESSAGE_REQUEST = 1994
     val USERS_PER_ROW = 2
 
-    lateinit var adapter : PeopleAdapter
-    lateinit var selectedUser : User
+    lateinit var adapter: PeopleAdapter
+    lateinit var selectedUser: User
+    lateinit var drawerToggle: ActionBarDrawerToggle
     var progressDialog: MaterialDialog? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_people)
 
-        adapter = PeopleAdapter(mutableListOf()) {
-            onUserClicked(it)
-        }
-
-        recyclerView.layoutManager = GridLayoutManager(this, USERS_PER_ROW)
-        recyclerView.adapter = adapter
+        configureNavigationDrawer()
+        configureRecyclerView()
 
         showProgress(getString(R.string.loading_message_facebook_friends))
         getFriendsFromFacebook { friends ->
@@ -58,6 +65,19 @@ class PeopleActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
             hideProgress()
         }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        drawerToggle.syncState()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -114,7 +134,7 @@ class PeopleActivity : AppCompatActivity() {
                 })
     }
 
-    fun getFriendsFromFacebook(onFriendsLoaded: (friends: MutableList<User>) -> Unit) {
+    private fun getFriendsFromFacebook(onFriendsLoaded: (friends: MutableList<User>) -> Unit) {
         val request = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken()) { jsonArray, _ ->
             onFriendsLoaded(convertToUsers(jsonArray))
         }
@@ -148,6 +168,52 @@ class PeopleActivity : AppCompatActivity() {
                 hideProgress()
                 ViewsUtils.createOKSnackBar(coordinatorLayout, "Sent message to $friendName").show()
         }
+    }
+
+    private fun configureRecyclerView() {
+        adapter = PeopleAdapter(mutableListOf()) {
+            onUserClicked(it)
+        }
+
+        recyclerView.layoutManager = GridLayoutManager(this, USERS_PER_ROW)
+        recyclerView.adapter = adapter
+    }
+
+    private fun configureNavigationDrawer() {
+        drawerToggle = ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_opened, R.string.drawer_close)
+
+        drawerLayout.addDrawerListener(drawerToggle)
+
+        val drawerItems = listOf("Logout")
+        leftDrawer.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems)
+        leftDrawer.setOnItemClickListener({ _, _, position, _ ->
+            when (drawerItems[position]) {
+                "Logout" -> {
+                    logout()
+                }
+            }
+        })
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setHomeButtonEnabled(true);
+        drawerToggle.syncState();
+    }
+
+    private fun logout() {
+        FirebaseAuth.getInstance().signOut()
+        LoginManager.getInstance().logOut()
+
+        Single.fromCallable {
+            val userDao = HeyHeyApp.database.userDao()
+            userDao.delete(HeyHeyApp.currentUser!!)
+            HeyHeyApp.currentUser = null
+        }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { _ ->
+                    startActivity(intentFor<LauncherActivity>().clearTop())
+                    finish()
+                }
     }
 
     private fun showProgress(message: String) {

@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Hey Hey</string>
 
+    <!-- Facebook Login -->
     <string name="facebook_application_id" translatable="false">748344972002222</string>
-    <!-- Facebook Application ID, prefixed by 'fb'.  Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb748344972002222</string>
 
     <!-- Progress Dialogs -->
@@ -14,4 +14,8 @@
     <string name="fab_menu_label">Actions</string>
     <string name="fab_item_compose">Compose</string>
     <string name="fab_item_predefined">Add predefined message</string>
+
+    <!-- Navigation Drawer -->
+    <string name="drawer_opened">drawer open</string>
+    <string name="drawer_close">drawer close</string>
 </resources>
