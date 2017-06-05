@@ -1,23 +1,21 @@
-package com.apele.heyhey.people
+package com.apele.heyhey.dashboard
 
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.apele.heyhey.HeyHeyApp
 import com.apele.heyhey.R
+import com.apele.heyhey.groups.NewGroupActivity
 import com.apele.heyhey.launcher.LauncherActivity
 import com.apele.heyhey.message.EXTRA_MESSAGE
 import com.apele.heyhey.message.MessagePickerActivity
 import com.apele.heyhey.model.User
-import com.apele.heyhey.utils.ViewsUtils
-import com.facebook.AccessToken
-import com.facebook.GraphRequest
+import com.apele.heyhey.utils.view.ViewsUtils
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -27,10 +25,11 @@ import com.google.firebase.database.ValueEventListener
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_people.*
+import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.android.synthetic.main.people_content.*
 import org.jetbrains.anko.clearTop
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,31 +38,21 @@ import org.json.JSONObject
  * Created by alexandrupele on 28/05/2017.
  */
 
-class PeopleActivity : AppCompatActivity() {
+class DashboardActivity : AppCompatActivity(), UserSelectionListener {
 
     val PICK_MESSAGE_REQUEST = 1994
-    val USERS_PER_ROW = 2
 
-    lateinit var adapter: PeopleAdapter
     lateinit var selectedUser: User
     lateinit var drawerToggle: ActionBarDrawerToggle
     var progressDialog: MaterialDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_people)
+        setContentView(R.layout.activity_dashboard)
 
         configureNavigationDrawer()
-        configureRecyclerView()
-
-        showProgress(getString(R.string.loading_message_facebook_friends))
-        getFriendsFromFacebook { friends ->
-            friends.add(HeyHeyApp.currentUser!!)
-
-            adapter.users = friends
-            adapter.notifyDataSetChanged()
-            hideProgress()
-        }
+        viewPager.adapter = DashboardPagerAdapter(supportFragmentManager)
+        tabLayout.setupWithViewPager(viewPager)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -90,7 +79,7 @@ class PeopleActivity : AppCompatActivity() {
                             if (selectedUser.fcmDeviceId.isEmpty()) {
                                 getDeviceIdForSelectedUser {
                                     if (it == null) {
-                                        Toast.makeText(this@PeopleActivity, "Cannot send", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this@DashboardActivity, "Cannot send", Toast.LENGTH_SHORT).show()
                                     } else {
                                         selectedUser.fcmDeviceId  = it
                                         send(message)
@@ -107,9 +96,13 @@ class PeopleActivity : AppCompatActivity() {
         }
     }
 
-    private fun onUserClicked(user: User) {
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onUserSelected(user: User) {
         selectedUser = user
-        startActivityForResult<MessagePickerActivity>(PICK_MESSAGE_REQUEST);
+        startActivityForResult<MessagePickerActivity>(PICK_MESSAGE_REQUEST)
     }
 
     private fun getDeviceIdForSelectedUser(onDeviceIdLoaded: (deviceId: String?) -> Unit) {
@@ -133,29 +126,6 @@ class PeopleActivity : AppCompatActivity() {
                 })
     }
 
-    private fun getFriendsFromFacebook(onFriendsLoaded: (friends: MutableList<User>) -> Unit) {
-        val request = GraphRequest.newMyFriendsRequest(AccessToken.getCurrentAccessToken()) { jsonArray, _ ->
-            onFriendsLoaded(convertToUsers(jsonArray))
-        }
-
-        val requestParameters = Bundle()
-        requestParameters.putString("fields", "name,picture.type(large)")
-        request.parameters = requestParameters
-
-        request.executeAsync()
-    }
-
-    private fun convertToUsers(friends: JSONArray) : MutableList<User> {
-        return friends.asSequence().map {
-            val user = User()
-
-            user.fbUserId = it.getString("id")
-            user.name = it.getString("name")
-            user.pictureUrl = it.getJSONObject("picture").getJSONObject("data").getString("url")
-
-            user
-        }.toMutableList()
-    }
 
     private fun send(message: String) {
         showProgress(getString(R.string.loading_message_fcm_push))
@@ -167,15 +137,6 @@ class PeopleActivity : AppCompatActivity() {
                 hideProgress()
                 ViewsUtils.createOKSnackBar(coordinatorLayout, "Sent message to $friendName").show()
         }
-    }
-
-    private fun configureRecyclerView() {
-        adapter = PeopleAdapter(mutableListOf()) {
-            onUserClicked(it)
-        }
-
-        recyclerView.layoutManager = GridLayoutManager(this, USERS_PER_ROW)
-        recyclerView.adapter = adapter
     }
 
     private fun configureNavigationDrawer() {

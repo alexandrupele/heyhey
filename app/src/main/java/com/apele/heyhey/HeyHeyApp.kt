@@ -18,6 +18,7 @@ class HeyHeyApp : MultiDexApplication() {
 
     companion object {
         var currentUser: User? = null
+        var friends: MutableList<User>? = null
         val notificationManager = NotificationManager(OkHttpClient(), Gson())
         lateinit var database: Database
     }

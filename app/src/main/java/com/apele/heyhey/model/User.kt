@@ -11,7 +11,7 @@ import com.google.firebase.database.Exclude
  */
 
 @Entity(tableName = "users")
-class User constructor() {
+class User {
 
     @PrimaryKey
     @ColumnInfo(name = "fb_id")

@@ -1,4 +1,4 @@
-package com.apele.heyhey.people
+package com.apele.heyhey.dashboard
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -12,12 +12,12 @@ import kotlinx.android.synthetic.main.friend_item.view.*
  */
 class PeopleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    fun bind(user: User, onUserClicked : (user: User) -> Unit) {
+    fun bind(user: User, onUserSelected: (user: User) -> Unit) {
         with (itemView) {
             nameTextView.text = user.name
-            avatarImageView.loadImage(user.pictureUrl)
+            userPictureImageView.loadImage(user.pictureUrl)
             setOnClickListener { _ ->
-                onUserClicked(user)
+                onUserSelected(user)
             }
         }
     }

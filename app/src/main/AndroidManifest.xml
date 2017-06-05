@@ -19,13 +19,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".people.PeopleActivity"
+        <activity android:name=".dashboard.DashboardActivity"
             android:screenOrientation="portrait" />
 
         <activity android:name=".message.MessagePickerActivity"
             android:screenOrientation="portrait" />
 
         <activity android:name=".message.InboxActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".groups.NewGroupActivity"
             android:screenOrientation="portrait" />
 
         <service

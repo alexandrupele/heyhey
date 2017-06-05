@@ -1,4 +1,4 @@
-package com.apele.heyhey.people
+package com.apele.heyhey.dashboard
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -6,10 +6,11 @@ import android.view.ViewGroup
 import com.apele.heyhey.R
 import com.apele.heyhey.model.User
 
-class PeopleAdapter(var users : MutableList<User>, val onUserClicked: (user: User) -> Unit) : RecyclerView.Adapter<PeopleViewHolder>() {
+class PeopleAdapter(var users : MutableList<User>,
+                    val onUserSelected: (user: User) -> Unit) : RecyclerView.Adapter<PeopleViewHolder>() {
 
     override fun onBindViewHolder(holder: PeopleViewHolder?, position: Int) {
-        holder?.bind(users[position], onUserClicked)
+        holder?.bind(users[position], onUserSelected)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, p1: Int): PeopleViewHolder {

@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.apele.heyhey.HeyHeyApp
 import com.apele.heyhey.model.User
-import com.apele.heyhey.people.PeopleActivity
+import com.apele.heyhey.dashboard.DashboardActivity
 import com.facebook.AccessToken
 import com.facebook.GraphRequest
 import com.firebase.ui.auth.AuthUI
@@ -159,7 +159,7 @@ class LauncherActivity : AppCompatActivity() {
     }
 
     private fun goToPeopleScreen() {
-        startActivity<PeopleActivity>()
+        startActivity<DashboardActivity>()
         finish()
     }
 }
